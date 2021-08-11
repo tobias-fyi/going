@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"strconv"
+	"os"
 )
 
 // === Notes === //
@@ -142,20 +142,20 @@ import (
 //  It is 19.5 degrees
 // ---------------------------------------------------------
 
-func main() {
-	var (
-		planet string
-		isTrue bool
-		temp   float64
-	)
+// func main() {
+// 	var (
+// 		planet string
+// 		isTrue bool
+// 		temp   float64
+// 	)
 
-	planet, isTrue, temp = "Mars", true, 19.5
+// 	planet, isTrue, temp = "Mars", true, 19.5
 
-	fmt.Println("Air is good on", planet)
-	fmt.Println("It's", strconv.FormatBool(isTrue))
-	fmt.Println("It's", temp, "degrees")
-	// fmt.Printf("%v\n", temp)
-}
+// 	fmt.Println("Air is good on", planet)
+// 	fmt.Println("It's", strconv.FormatBool(isTrue))
+// 	fmt.Println("It's", temp, "degrees")
+// 	// fmt.Printf("%v\n", temp)
+// }
 
 // ---------------------------------------------------------
 // EXERCISE: Multi Short Func
@@ -170,8 +170,7 @@ func main() {
 // ---------------------------------------------------------
 
 // func main() {
-// 	// ADD YOUR DECLARATIONS HERE
-
+// 	_, b := multi()
 // 	fmt.Println(b)
 // }
 
@@ -179,3 +178,211 @@ func main() {
 // func multi() (int, int) {
 // 	return 5, 4
 // }
+
+// ---------------------------------------------------------
+// EXERCISE: Swapper
+//  1. Change `color` to "orange" and `color2` to "green" at the same time
+//     (use multiple-assignment)
+//  2. Print the variables
+// EXPECTED OUTPUT
+//  orange green
+// ---------------------------------------------------------
+
+// func main() {
+// 	color, color2 := "red", "blue"
+// 	color, color2 = "orange", "green"
+// 	fmt.Println(color, color2)
+// }
+
+// ---------------------------------------------------------
+// EXERCISE: Swapper #2
+//  1. Swap the values of `red` and `blue` variables
+//  2. Print them
+// EXPECTED OUTPUT
+//  blue red
+// ---------------------------------------------------------
+
+// func main() {
+// 	red, blue := "red", "blue"
+// 	blue, red = red, blue
+// 	fmt.Println(red, blue)
+// }
+
+// ---------------------------------------------------------
+// EXERCISE: Discard The File
+//  1. Print only the directory using `path.Split`
+//  2. Discard the file part
+// RESTRICTION
+//  Use short declaration
+// EXPECTED OUTPUT
+//  secret/
+// ---------------------------------------------------------
+
+// func main() {
+// 	dir, _ := path.Split("secret/file.txt")
+// 	fmt.Println(dir)
+// }
+
+// ---------------------------------------------------------
+// EXERCISE: Convert and Fix
+//  Fix the code by using the conversion expression.
+// EXPECTED OUTPUT
+//  15.5
+// ---------------------------------------------------------
+
+// func main() {
+// 	a, b := 10, 5.5
+// 	fmt.Println(float64(a) + b)
+// }
+
+// ---------------------------------------------------------
+// EXERCISE: Convert and Fix #2
+//  Fix the code by using the conversion expression.
+// EXPECTED OUTPUT
+//  10.5
+// ---------------------------------------------------------
+
+// func main() {
+// 	a, b := 10, 5.5
+// 	a = int(b)
+// 	fmt.Println(float64(a) + b)
+// }
+
+// ---------------------------------------------------------
+// EXERCISE: Convert and Fix #3
+//  Fix the code.
+// EXPECTED OUTPUT
+//  5.5
+// ---------------------------------------------------------
+
+// func main() {
+// 	fmt.Println(5.5)
+// }
+
+// ---------------------------------------------------------
+// EXERCISE: Convert and Fix #4
+//  Fix the code.
+// EXPECTED OUTPUT
+//  9.5
+// ---------------------------------------------------------
+
+// func main() {
+// 	age := 2
+// 	fmt.Println(7.5 + float64(age))
+// }
+
+// ---------------------------------------------------------
+// EXERCISE: Convert and Fix #5
+//  Fix the code.
+// HINTS
+//   maximum of int8  can be 127
+//   maximum of int16 can be 32767
+// EXPECTED OUTPUT
+//  1127
+// ---------------------------------------------------------
+
+// func main() {
+// 	min := int8(127)
+// 	max := int16(1000)
+// 	fmt.Println(int16(min) + max)
+// }
+
+// ---------------------------------------------------------
+// EXERCISE: Count the Arguments
+//  Print the count of the command-line arguments
+// INPUT
+//  bilbo balbo bungo
+// EXPECTED OUTPUT
+//  There are 3 names.
+// ---------------------------------------------------------
+
+// func main() {
+// 	count := len(os.Args) - 1
+// 	fmt.Printf("There are %d names.\n", count)
+// }
+
+// ---------------------------------------------------------
+// EXERCISE: Print the Path
+//  Print the path of the running program by getting it from `os.Args` variable.
+// HINT
+//  Use `go build` to build your program.
+//  Then run it using the compiled executable program file.
+// EXPECTED OUTPUT SHOULD INCLUDE THIS
+//  myprogram
+// ---------------------------------------------------------
+
+// func main() {
+// 	fmt.Println(os.Args[0])
+// }
+
+// ---------------------------------------------------------
+// EXERCISE: Print Your Name
+//  Get it from the first command-line argument
+// INPUT
+//  Call the program using your name
+// EXPECTED OUTPUT
+//  It should print your name
+// EXAMPLE
+//  go run main.go inanc
+//    inanc
+// BONUS: Make the output like this:
+//  go run main.go inanc
+//    Hi inanc
+//    How are you?
+// ---------------------------------------------------------
+
+// func main() {
+// 	name := os.Args[1]
+// 	fmt.Println("Hello,", name, "\nHow are you?")
+// }
+
+// ---------------------------------------------------------
+// EXERCISE: Greet More People
+// RESTRICTIONS
+//  1. Be sure to match the expected output below
+//  2. Store the length of the arguments in a variable
+//  3. Store all the arguments in variables as well
+// INPUT
+//  bilbo balbo bungo
+// EXPECTED OUTPUT
+//  There are 3 people!
+//  Hello great bilbo !
+//  Hello great balbo !
+//  Hello great bungo !
+//  Nice to meet you all.
+// ---------------------------------------------------------
+
+// func main() {
+// 	count := len(os.Args) - 1
+// 	fmt.Println("There are", count, "people!")
+// 	for i := 1; i <= count; i++ {
+// 		fmt.Println("Hello, great", os.Args[i])
+// 	}
+// 	fmt.Println("Nice to meet you all.")
+// }
+
+// ---------------------------------------------------------
+// EXERCISE: Greet 5 People
+//  Greet 5 people this time.
+//  Please do not copy paste from the previous exercise!
+// RESTRICTION
+//  This time do not use variables.
+// INPUT
+//  bilbo balbo bungo gandalf legolas
+// EXPECTED OUTPUT
+//  There are 5 people!
+//  Hello great bilbo !
+//  Hello great balbo !
+//  Hello great bungo !
+//  Hello great gandalf !
+//  Hello great legolas !
+//  Nice to meet you all.
+// ---------------------------------------------------------
+
+func main() {
+	fmt.Println("There are", len(os.Args)-1, "people!")
+	for i := 1; i < len(os.Args); i++ {
+		fmt.Println("Hello, great", os.Args[i])
+	}
+	fmt.Println("Mice to neet you all.")
+}
