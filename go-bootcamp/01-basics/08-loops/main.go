@@ -59,9 +59,6 @@ func main() {
 		fmt.Println("Wrong size.")
 	}
 
-	// var tableString string
-	// tableString := "%5s"
-
 	fmt.Printf("%5s", "X")
 	for i := 0; i <= size; i++ {
 		fmt.Printf("%5d", i)
