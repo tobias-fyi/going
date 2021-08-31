@@ -42,9 +42,12 @@ import (
 func main() {
 	// DON'T TOUCH THIS:
 	lyric := strings.Fields(`all my troubles seemed so far away oh I believe in yesterday now it looks as though they are here to stay`)
-	fmt.Printf("len: %d; cap: %d", len(lyric), cap(lyric))
+	fmt.Printf("len: %d; cap: %d\n", len(lyric), cap(lyric))
 
 	// ADD YOUR CODE BELOW:
-	fmt.Printf("len: %d; cap: %d", len(lyric), cap(lyric))
-	fmt.Printf("%s\n", lyric)
+	newLyric := append([]string{"yesterday"}, lyric[:7]...)
+	newLyric = append(newLyric, lyric[12:]...)
+	newLyric = append(newLyric, lyric[7:12]...)
+	fmt.Printf("len: %d; cap: %d\n", len(newLyric), cap(newLyric))
+	fmt.Printf("%s\n", newLyric)
 }
