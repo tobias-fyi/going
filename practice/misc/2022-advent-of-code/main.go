@@ -1,227 +1,84 @@
 package main
 
-import (
-	"bufio"
-	"fmt"
-	"log"
-	"os"
-	"strconv"
-	"strings"
-)
-
 // === ===
-// === 2022 Advent of Code, Day 2 === //
+// === 2022 Advent of Code, Day 7 === //
 // === ===
 
 /*
---- Day 4: Camp Cleanup ---
-Space needs to be cleared before the last supplies can be unloaded from the ships, and so several Elves have been assigned the job of cleaning up sections of the camp. Every section has a unique ID number, and each Elf is assigned a range of section IDs.
+--- Day 7: No Space Left On Device ---
+You can hear birds chirping and raindrops hitting leaves as the expedition proceeds. Occasionally, you can even hear much louder sounds in the distance; how big do the animals get out here, anyway?
+The device the Elves gave you has problems with more than just its communication system. You try to run a system update:
 
-However, as some of the Elves compare their section assignments with each other, they've noticed that many of the assignments overlap. To try to quickly find overlaps and reduce duplicated effort, the Elves pair up and make a big list of the section assignments for each pair (your puzzle input).
+		$ system-update --please --pretty-please-with-sugar-on-top
+		Error: No space left on device
 
-For example, consider the following list of section assignment pairs:
+Perhaps you can delete some files to make space for the update?
+You browse around the filesystem to assess the situation and save the resulting terminal output (your puzzle input). For example:
 
-		2-4,6-8
-		2-3,4-5
-		5-7,7-9
-		2-8,3-7
-		6-6,4-6
-		2-6,4-8
+		$ cd /
+		$ ls
+		dir a
+		14848514 b.txt
+		8504156 c.dat
+		dir d
+		$ cd a
+		$ ls
+		dir e
+		29116 f
+		2557 g
+		62596 h.lst
+		$ cd e
+		$ ls
+		584 i
+		$ cd ..
+		$ cd ..
+		$ cd d
+		$ ls
+		4060174 j
+		8033020 d.log
+		5626152 d.ext
+		7214296 k
 
-For the first few pairs, this list means:
+The filesystem consists of a tree of files (plain data) and directories (which can contain other directories or files). The outermost directory is called /. You can navigate around the filesystem, moving into or out of directories and listing the contents of the directory you're currently in.
 
-Within the first pair of Elves, the first Elf was assigned sections 2-4 (sections 2, 3, and 4), while the second Elf was assigned sections 6-8 (sections 6, 7, 8).
-The Elves in the second pair were each assigned two sections.
-The Elves in the third pair were each assigned three sections: one got sections 5, 6, and 7, while the other also got 7, plus 8 and 9.
-This example list uses single-digit section IDs to make it easier to draw; your actual list might contain larger numbers. Visually, these pairs of section assignments look like this:
+Within the terminal output, lines that begin with $ are commands you executed, very much like some modern computers:
 
-		.234.....  2-4
-		.....678.  6-8
+cd means change directory. This changes which directory is the current directory, but the specific result depends on the argument:
+cd x moves in one level: it looks in the current directory for the directory named x and makes it the current directory.
+cd .. moves out one level: it finds the directory that contains the current directory, then makes that directory the current directory.
+cd / switches the current directory to the outermost directory, /.
+ls means list. It prints out all of the files and directories immediately contained by the current directory:
+123 abc means that the current directory contains a file named abc with size 123.
+dir xyz means that the current directory contains a directory named xyz.
 
-		.23......  2-3
-		...45....  4-5
+Given the commands and output in the example above, you can determine that the filesystem looks visually like this:
 
-		....567..  5-7
-		......789  7-9
+- / (dir)
+  - a (dir)
+    - e (dir)
+      - i (file, size=584)
+    - f (file, size=29116)
+    - g (file, size=2557)
+    - h.lst (file, size=62596)
+  - b.txt (file, size=14848514)
+  - c.dat (file, size=8504156)
+  - d (dir)
+    - j (file, size=4060174)
+    - d.log (file, size=8033020)
+    - d.ext (file, size=5626152)
+    - k (file, size=7214296)
 
-		.2345678.  2-8
-		..34567..  3-7
+Here, there are four directories: / (the outermost directory), a and d (which are in /), and e (which is in a). These directories also contain files of various sizes.
+Since the disk is full, your first step should probably be to find directories that are good candidates for deletion. To do this, you need to determine the total size of each directory. The total size of a directory is the sum of the sizes of the files it contains, directly or indirectly. (Directories themselves do not count as having any intrinsic size.)
+The total sizes of the directories above can be found as follows:
 
-		.....6...  6-6
-		...456...  4-6
+The total size of directory e is 584 because it contains a single file i of size 584 and no other directories.
+The directory a has total size 94853 because it contains files f (size 29116), g (size 2557), and h.lst (size 62596), plus file i indirectly (a contains e which contains i).
+Directory d has total size 24933642.
+As the outermost directory, / contains every file. Its total size is 48381165, the sum of the size of every file.
 
-		.23456...  2-6
-		...45678.  4-8
-
-Some of the pairs have noticed that one of their assignments fully contains the other. For example, 2-8 fully contains 3-7, and 6-6 is fully contained by 4-6. In pairs where one assignment fully contains the other, one Elf in the pair would be exclusively cleaning sections their partner will already be cleaning, so these seem like the most in need of reconsideration. In this example, there are 2 such pairs.
-
-In how many assignment pairs does one range fully contain the other?
+To begin, find all of the directories with a total size of at most 100000, then calculate the sum of their total sizes. In the example above, these directories are a and e; the sum of their total sizes is 95437 (94853 + 584). (As in this example, this process can count files more than once!)
+Find all of the directories with a total size of at most 100000. What is the sum of the total sizes of those directories?
 */
 
-// === Part 1 === //
-
-// type Elf struct {
-// 	low  int
-// 	high int
-// }
-
-// type ElfPair struct {
-// 	elf1 Elf
-// 	elf2 Elf
-// }
-
-// func (p *ElfPair) fullyContains() bool {
-// 	if p.elf1.low <= p.elf2.low && p.elf1.high >= p.elf2.high {
-// 		return true
-// 	}
-
-// 	if p.elf2.low <= p.elf1.low && p.elf2.high >= p.elf1.high {
-// 		return true
-// 	}
-
-// 	return false
-// }
-
-// func main() {
-// 	score, err := countOverlappingRanges("input4.txt")
-// 	if err != nil {
-// 		log.Fatal(err)
-// 	}
-
-// 	log.Println(score)
-// }
-
-// func countOverlappingRanges(file string) (int, error) {
-// 	f, err := os.Open(file)
-// 	if err != nil {
-// 		return 0, fmt.Errorf("error opening file: %w", err)
-// 	}
-// 	defer f.Close()
-
-// 	var sum int
-// 	// lines := []ElfPair{}
-
-// 	sc := bufio.NewScanner(f)
-// 	for sc.Scan() {
-// 		var elfPair ElfPair
-// 		pairElf := []Elf{}
-// 		pairStr := strings.Split(sc.Text(), ",")
-// 		for _, elfRange := range pairStr {
-// 			var elf Elf
-// 			idsStr := strings.Split(elfRange, "-")
-// 			idsInt := make([]int, len(idsStr))
-// 			for i, id := range idsStr {
-// 				idsInt[i], err = strconv.Atoi(id)
-// 				if err != nil {
-// 					return 0, fmt.Errorf("error converting string to int: %w", err)
-// 				}
-// 			}
-// 			elf.low = idsInt[0]
-// 			elf.high = idsInt[1]
-// 			pairElf = append(pairElf, elf)
-// 		}
-// 		elfPair.elf1 = pairElf[0]
-// 		elfPair.elf2 = pairElf[1]
-// 		fullyCont := elfPair.fullyContains()
-// 		if fullyCont {
-// 			sum += 1
-// 		}
-// 		// lines = append(lines, fullyCont)
-// 	}
-// 	if err := sc.Err(); err != nil {
-// 		return 0, fmt.Errorf("scan file error: %w", err)
-// 	}
-
-// 	return sum, nil
-// }
-
-/*
---- Part Two ---
-It seems like there is still quite a bit of duplicate work planned. Instead, the Elves would like to know the number of pairs that overlap at all.
-
-In the above example, the first two pairs (2-4,6-8 and 2-3,4-5) don't overlap, while the remaining four pairs (5-7,7-9, 2-8,3-7, 6-6,4-6, and 2-6,4-8) do overlap:
-
-* 5-7,7-9 overlaps in a single section, 7.
-* 2-8,3-7 overlaps all of the sections 3 through 7.
-* 6-6,4-6 overlaps in a single section, 6.
-* 2-6,4-8 overlaps in sections 4, 5, and 6.
-
-So, in this example, the number of overlapping assignment pairs is 4.
-
-In how many assignment pairs do the ranges overlap?
-*/
-
-type Elf struct {
-	low  int
-	high int
-}
-
-type ElfPair struct {
-	elf1 Elf
-	elf2 Elf
-}
-
-func (p *ElfPair) overlap() bool {
-	if p.elf1.high >= p.elf2.low && p.elf1.low <= p.elf2.low {
-		return true
-	}
-
-	if p.elf2.high >= p.elf1.low && p.elf2.low <= p.elf1.low {
-		return true
-	}
-
-	return false
-}
-
-func main() {
-	score, err := countOverlappingRanges("input4.txt")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	log.Println(score)
-}
-
-func countOverlappingRanges(file string) (int, error) {
-	f, err := os.Open(file)
-	if err != nil {
-		return 0, fmt.Errorf("error opening file: %w", err)
-	}
-	defer f.Close()
-
-	var sum int
-	// lines := []ElfPair{}
-
-	sc := bufio.NewScanner(f)
-	for sc.Scan() {
-		var elfPair ElfPair
-		pairElf := []Elf{}
-		pairStr := strings.Split(sc.Text(), ",")
-		for _, elfRange := range pairStr {
-			var elf Elf
-			idsStr := strings.Split(elfRange, "-")
-			idsInt := make([]int, len(idsStr))
-			for i, id := range idsStr {
-				idsInt[i], err = strconv.Atoi(id)
-				if err != nil {
-					return 0, fmt.Errorf("error converting string to int: %w", err)
-				}
-			}
-			elf.low = idsInt[0]
-			elf.high = idsInt[1]
-			pairElf = append(pairElf, elf)
-		}
-		elfPair.elf1 = pairElf[0]
-		elfPair.elf2 = pairElf[1]
-		overlap := elfPair.overlap()
-		if overlap {
-			sum += 1
-		}
-		// lines = append(lines, fullyCont)
-	}
-	if err := sc.Err(); err != nil {
-		return 0, fmt.Errorf("scan file error: %w", err)
-	}
-
-	return sum, nil
-}
+func main() {}
